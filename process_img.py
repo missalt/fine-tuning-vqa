@@ -5,6 +5,7 @@ import random
 from io import BytesIO
 
 import torch
+import transformers
 from promptcap import PromptCap
 
 model = PromptCap("tifa-benchmark/promptcap-coco-vqa")  # also support OFA checkpoints. e.g. "OFA-Sys/ofa-large"
@@ -41,7 +42,53 @@ for i, (url, question) in enumerate(processed_imgs):
 
     caption = model.caption(prompt, image_bytes)
 
-    dict = {'url': url, 'question': question, 'caption': caption, 'answers': answers}
+    ########################################
+    # Generating the answer candidates
+
+    model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+    pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.float16},
+    device="cuda"
+    )
+
+    answer_candidates = []
+    n = 10
+
+    messages = [
+        {"role": "system", "content": f"context: {caption}, question: {question}, answer the question in max 2 words and no punctuation"},
+    ]
+
+    prompt = pipeline.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+    )
+
+
+    terminators = [
+        pipeline.tokenizer.eos_token_id,
+        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    ]
+
+    # Generate answer candidates using beam search
+    outputs = pipeline(
+        prompt,
+        max_new_tokens=10,
+        eos_token_id=terminators,
+        # do_sample=True,
+        # temperature=0.6,
+        # top_p=0.9,
+        num_beams=n,
+        num_return_sequences=n,
+    )
+
+    answer_candidates = [output["generated_text"][len(prompt):].strip() for output in outputs]
+
+    ########################################
+
+    dict = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
     lst_data.append(dict)
 
 

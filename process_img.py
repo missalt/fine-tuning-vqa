@@ -10,6 +10,23 @@ from promptcap import PromptCap
 
 model = PromptCap("tifa-benchmark/promptcap-coco-vqa")  # also support OFA checkpoints. e.g. "OFA-Sys/ofa-large"
 
+
+n = 10
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.float16},
+    device="cuda"
+)
+
+terminators = [
+    pipeline.tokenizer.eos_token_id,
+    pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+]
+
+
+
 # device = "cuda:0"
 # model.to(device)
 model = model.cuda()
@@ -44,20 +61,10 @@ for i, (url, question) in enumerate(processed_imgs):
 
     ########################################
     # Generating the answer candidates
-
-    model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-    pipeline = transformers.pipeline(
-    "text-generation",
-    model=model_id,
-    model_kwargs={"torch_dtype": torch.float16},
-    device="cuda"
-    )
-
     answer_candidates = []
-    n = 10
 
     messages = [
-        {"role": "system", "content": f"context: {caption}, question: {question}, answer the question in max 2 words and no punctuation"},
+    {"role": "system", "content": f"context: {caption}, question: {question}, answer the question in max 2 words and no punctuation"},
     ]
 
     prompt = pipeline.tokenizer.apply_chat_template(
@@ -65,12 +72,6 @@ for i, (url, question) in enumerate(processed_imgs):
             tokenize=False,
             add_generation_prompt=True
     )
-
-
-    terminators = [
-        pipeline.tokenizer.eos_token_id,
-        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
-    ]
 
     # Generate answer candidates using beam search
     outputs = pipeline(

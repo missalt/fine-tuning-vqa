@@ -9,9 +9,9 @@ from promptcap import PromptCap
 
 model = PromptCap("tifa-benchmark/promptcap-coco-vqa")  # also support OFA checkpoints. e.g. "OFA-Sys/ofa-large"
 
-# device = "cuda:0"
-# model.to(device)
-model = model.cuda()
+device = "cuda:0"
+model = model.to(device)
+# model = model.cuda()
 
 with open('REVIVE/processed_data/train.pkl', 'rb') as f:
     data = pickle.load(f)
@@ -24,10 +24,10 @@ for i, dict_data in enumerate(data):
     answers = dict_data['answers_list']
     split = img_id.split('_')[1]
     url = f"http://images.cocodataset.org/{split}/{img_id}"
-    processed_imgs.append((url, question))
+    processed_imgs.append((url, question, answers))
 
 lst_data = []
-for i, (url, question) in enumerate(processed_imgs):
+for i, (url, question, answers) in enumerate(processed_imgs):
     if i % 100 == 0:
         print(f"Processing image {i} of {len(processed_imgs)}")
     prompt = f"please describe this image according to the given question: {question}"

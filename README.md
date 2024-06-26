@@ -9,6 +9,7 @@
 2. Run the match_and_combine_by_url.py script to merge them. The output file is specified in the PATH_OUTPUT Variable and will be /data/train_output.pkl by default.
 
 #### clip_extractor.py
+This script is responsible for the Visual Encoding part and generates the features given a set of image url's of the cocodataset with the help of the CLIP model.
 
 #### match_and_combine_by_url.py
 

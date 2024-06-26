@@ -15,6 +15,7 @@
 #### clip_extractor.py
 This script is responsible for the Visual Encoding part and generates the features given a set of image url's of the cocodataset with the help of the CLIP model. The final result of the code
 is a Pickle file with urls and features paired together.
+
 NOTE! you cannot view the pickle view though normal means. try uncommenting the load pickle file after running the code and print the pickle file if you wish to view its contents.
 
 #### match_and_combine_by_url.py

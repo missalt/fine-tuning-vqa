@@ -14,6 +14,7 @@ import torch
 import pickle
 from google.colab import drive
 import json
+from tqdm import tqdm
 
 drive.mount('/content/gdrive')
 
@@ -37,22 +38,25 @@ def get_image_features(image_path):
     image_features = outputs[0].cpu().numpy()
     return image_features
 
-# image array. we need to put our images into this set
-with open("/content/gdrive/MyDrive/DATA/train.pkl", 'rb') as f:
+# image array, we need to put our images into this set
+train_data_file = "/content/gdrive/MyDrive/DATA/train.pkl"
+test_data_file = "/content/gdrive/MyDrive/DATA/test.pkl"
+
+with open(train_data_file, 'rb') as f:
     data = pickle.load(f)
 
 processed_imgs = []
 
-for i, dict_data in enumerate(data):
-      #if i <10:
+#get image urls from REVIVE list of train data
+for i, dict_data in enumerate(tqdm(data)):
         img_id = dict_data['image_name']
         split = img_id.split('_')[1]
         url = f"http://images.cocodataset.org/{split}/{img_id}"
         path = img_id
         processed_imgs.append((url, path))
 
-
-for i, (url, path) in enumerate(processed_imgs):
+# get and save images from coco dataset
+for i, (url, path) in enumerate(tqdm(processed_imgs)):
   response = requests.get(url)
   with open(path, 'wb') as f:
       f.write(response.content)
@@ -62,26 +66,26 @@ def extractor (image_list) :
   image_list_array = image_list
   feature_list = []
   lst_data = []
-  for i, (url, path) in enumerate(image_list) :
+
+  #get the features of every image in the list
+  for i, (url, path) in enumerate(tqdm(image_list)) :
     features = get_image_features(path)
     feature_list.append(features)
 
-    dict = {'url': url, 'feature': feature_list}
+    # save url and fitting features to dictionary to use for further actions
+    dict = {'url': url, 'feature': features}
+
+    #dict = {'url': url, 'feature': feature_list}
     lst_data.append(dict)
 
   return lst_data
 
-# Get features
+# get features
 dictionary_list = extractor(processed_imgs)
+print("Got dictionary list: " + len(dictionary_list))
 
-fileName = '/content/gdrive/MyDrive/DATA/A-output.pkl'
+
+# write dictionary to pkl file to use for training and testing
+fileName = '/content/gdrive/MyDrive/DATA/output-features.pkl'
 with open(fileName, 'wb') as out:
   pickle.dump(dictionary_list, out)
-
-#with open(fileName, 'rb') as file:
-#  data = pickle.load(file)
-
-print(data)
-
-
-

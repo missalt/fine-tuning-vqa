@@ -8,10 +8,11 @@ import torch
 import transformers
 from promptcap import PromptCap
 
-model = PromptCap("tifa-benchmark/promptcap-coco-vqa")  # also support OFA checkpoints. e.g. "OFA-Sys/ofa-large"
-
-
+# Initialize the PromptCap model
+model = PromptCap("tifa-benchmark/promptcap-coco-vqa")
 n = 10
+
+# Initialize the text generation pipeline with Meta-Llama model
 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 pipeline = transformers.pipeline(
     "text-generation",
@@ -20,6 +21,7 @@ pipeline = transformers.pipeline(
     device="cuda"
 )
 
+# Define terminators for the pipeline
 terminators = [
     pipeline.tokenizer.eos_token_id,
     pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
@@ -31,67 +33,90 @@ terminators = [
 # model.to(device)
 model = model.cuda()
 
-with open('REVIVE/processed_data/train.pkl', 'rb') as f:
-    data = pickle.load(f)
+def generate_caption_answercandidates(file_path, output_path):
+    """
+    Function to generate captions and answer candidates for images.
 
-processed_imgs = []
+    Parameters:
+    - file_path (str): Path to the input pickle file containing image data.
+    - output_path (str): Path to the output pickle file to save results.
 
-for i, dict_data in enumerate(data):
-    question = dict_data['question']
-    img_id = dict_data['image_name']
-    answers = dict_data['answers_list']
-    split = img_id.split('_')[1]
-    url = f"http://images.cocodataset.org/{split}/{img_id}"
-    processed_imgs.append((url, question))
+    The function loads image data from the input file, generates captions using the PromptCap model,
+    and generates answer candidates using the text generation pipeline. The results are saved to the
+    specified output file.
+    """
 
-lst_data = []
-for i, (url, question) in enumerate(processed_imgs):
-    if i % 100 == 0:
-        print(f"Processing image {i} of {len(processed_imgs)}")
-    prompt = f"please describe this image according to the given question: {question}"
-    
-    response = requests.get(url)
-    image = Image.open(BytesIO(response.content))
+    with open(file_path, 'rb') as f:
+        data = pickle.load(f)
 
-    image_bytes = BytesIO()
-    image.save(image_bytes, format='JPEG')
-    image_bytes.seek(0)
+    processed_imgs = []
 
-    caption = model.caption(prompt, image_bytes)
+    for i, dict_data in enumerate(data):
+        question = dict_data['question']
+        img_id = dict_data['image_name']
+        answers = dict_data['answers_list']
+        split = img_id.split('_')[1]
+        url = f"http://images.cocodataset.org/{split}/{img_id}"
+        processed_imgs.append((url, question))
 
-    ########################################
-    # Generating the answer candidates
-    answer_candidates = []
+    lst_data = []
+    for i, (url, question) in enumerate(processed_imgs):
+        if i % 100 == 0:
+            print(f"Processing image {i} of {len(processed_imgs)}")
 
-    messages = [
-    {"role": "system", "content": f"context: {caption}, question: {question}, answer the question in max 2 words and no punctuation"},
-    ]
+        ########################################
+        # Generating the caption
+        prompt = f"please describe this image according to the given question: {question}"
+        
+        response = requests.get(url)
+        image = Image.open(BytesIO(response.content))
 
-    prompt = pipeline.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
-    )
+        image_bytes = BytesIO()
+        image.save(image_bytes, format='JPEG')
+        image_bytes.seek(0)
 
-    # Generate answer candidates using beam search
-    outputs = pipeline(
-        prompt,
-        max_new_tokens=10,
-        eos_token_id=terminators,
-        # do_sample=True,
-        # temperature=0.6,
-        # top_p=0.9,
-        num_beams=n,
-        num_return_sequences=n,
-    )
+        # Generate caption using the PromptCap model
+        caption = model.caption(prompt, image_bytes)
 
-    answer_candidates = [output["generated_text"][len(prompt):].strip() for output in outputs]
+        ########################################
+        # Generating the answer candidates
+        answer_candidates = []
 
-    ########################################
+        messages = [
+            {"role": "system", "content": f"context: {caption}, question: {question}, answer the question in max 2 words and no punctuation"},
+        ]
 
-    dict = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
-    lst_data.append(dict)
+        prompt = pipeline.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+        )
+
+        # Generate multiple answer candidates
+        outputs = pipeline(
+            prompt,
+            max_new_tokens=10,
+            eos_token_id=terminators,
+            # do_sample=True,
+            # temperature=0.6,
+            # top_p=0.9,
+            num_beams=n,
+            num_return_sequences=n,
+        )
+
+        # Extract the generated answers from the outputs
+        answer_candidates = [output["generated_text"][len(prompt):].strip() for output in outputs]
+
+        ########################################
+
+        dict = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
+        lst_data.append(dict)
 
 
-with open('/data/train_captions.pkl', 'wb') as f:
-    pickle.dump(lst_data, f)
+    with open(output_path, 'wb') as f:
+        pickle.dump(lst_data, f)
+
+
+# Generate captions and answer candidates for training and testing datasets
+generate_caption_answercandidates('processed_data/train.pkl', '/out_data/train_captions.pkl')
+generate_caption_answercandidates('processed_data/test.pkl', '/out_data/test_captions.pkl')

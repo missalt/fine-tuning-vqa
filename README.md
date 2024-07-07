@@ -33,7 +33,7 @@ fine-tuning-vqa
 ### Pre-trained model
 |Model |Description|Accuracy(%)|Weight|Log
 |  ----  | ----  | ----  | ---- | ---- | 
-|Ours (Single)|large size and trained with visual features, question specific captions and answer candidates| 55.1 |Available upon request (too large)|[run.log](https://drive.google.com/file/d/1qsqh0-xJDKv-ZKMlxq4IV2QSMYrjRBeQ/view?usp=drive_link)|
+|Ours (Single)|large size and trained with visual features, question specific captions and answer candidates| 55.2 |Available upon request (too large)|[run.log](https://drive.google.com/file/d/1qsqh0-xJDKv-ZKMlxq4IV2QSMYrjRBeQ/view?usp=drive_link)|
 
 As for **model ensembling**, you can train three models with different seeds, and for each sample, 
 you can get the final result with the **highest occurence frequency** among the three models' predictions,

@@ -44,8 +44,10 @@ The prediction results of **"single"** and **"ensemble"** versions are shared:
 
 |Model |Accuracy(%)|Download|
 |  ----  | ----  | ---- |  
-|Ours (Single)| 55.1 |[prediction_acc56.6.json](https://drive.google.com/file/d/1KjMa-XjWjLIwQBg6JhCoLUtJQ9rIMON-/view?usp=sharing)|
-|Ours (Ensemble)| 56.8 |[prediction_acc58.1.json](https://drive.google.com/file/d/1rvIP74bfGP5aLr9x2yMn03_f0KrnG0OH/view?usp=sharing)|
+|Ours (Single) Trial 1| 55.2 |[prediction-137.json](https://drive.google.com/file/d/1WupvaQAFsI9g26Eke_Bu2VgyOcFIEoox/view?usp=sharing)|
+|Ours (Single) Trial 2| 55.3 |[prediction-1357.json](https://drive.google.com/file/d/1vIOeNeaAjxREruVKFUMSgXfcOVb4Sfq-/view?usp=sharing)|
+|Ours (Single) Trial 3| 55.2 |[prediction.json](https://drive.google.com/file/d/1yV0nbHbBperpNhSF4S7p2dj0lQOkX6jF/view?usp=sharing)|
+|Ours (Ensemble)| 56.8 |[prediction_ensemble.json](https://drive.google.com/file/d/1EemLClVK_xIATc0QhI6YiOOm_A0Ekcx-/view?usp=sharing)|
 
 
 ### Train the model

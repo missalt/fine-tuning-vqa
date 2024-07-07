@@ -5,43 +5,35 @@
 ### Installation
 To establish the environment, just run this code in the shell:
 ```
-git clone https://github.com/yzleroy/REVIVE.git
-cd REVIVE
+https://github.com/missalt/fine-tuning-vqa.git
+cd fine-tuning-vqa
 conda env create -f requirements.yaml
 conda activate revive
 ```
 That will create the environment ```revive``` we used.
 ### Download data
-We provide the pre-processed data, it contains visual features,  implicit/explicit knowledge, 
-bounding boxes, caption, tags for each sample.
+We provide the pre-processed data, it contains visual features,  question-specific captions, 
+answer candidates for each sample.
 
-Download the pre-processed data, which contains two files ("train.pkl" and "test.pkl").
+Download the pre-processed data, which contains two files ("train_output.pkl" and "test_output.pkl").
 ```
 pip install gdown
-gdown https://drive.google.com/uc?id=1kP_xeuUCAS5wqWQwuwVItDgRTAbEjUeM&export=download
+gdown https://drive.google.com/uc?id=12djn3dC7huVllRxeSdOPCSImpSChhZKQ
 unzip processed_data.zip
 ```
 It will create a folder data:
 ```
-REVIVE
+fine-tuning-vqa
 ├── ...
 ├── processed_data
-│   ├── train.pkl
-│   ├── test.pkl
+│   ├── train_output.pkl
+│   ├── test_output.pkl
 └── ...
 ```
-Note that in "train.pkl" and "test.pkl" data, the meanings of the keys are explained as following: 
-
-"**im_ctxs**": implicit knowledge, each one among it means one implicit knowledge sample.  
-"**ex_ctxs**": explicit knowledge, each one among it means one explicit knowledge sample.  
-"**boxes**": detected bounding boxes from the object detector.  
-"**vis_feat**": visual features which correspond to the detected bounding boxes.  
-"**tags**": retrieved tags according to CLIP similarity.  
-
 ### Pre-trained model
 |Model |Description|Accuracy(%)|Weight|Log
 |  ----  | ----  | ----  | ---- | ---- | 
-|REVIVE (Single)|large size and trained with visual features, explicit and implicit knowledge| 56.6 |[model.zip](https://drive.google.com/file/d/1yCEgGaxz-GNR4WS89d8ndvuB9bZmMBy_/view?usp=sharing)|[run.log](https://drive.google.com/file/d/1JaSigxV7UoVN5GvYZe0qdyfzLIczTmo7/view?usp=sharing)|
+|Ours (Single)|large size and trained with visual features, question specific captions and answer candidates| 55.1 |Available upon request (too large)|[run.log](https://drive.google.com/file/d/1qsqh0-xJDKv-ZKMlxq4IV2QSMYrjRBeQ/view?usp=drive_link)|
 
 As for **model ensembling**, you can train three models with different seeds, and for each sample, 
 you can get the final result with the **highest occurence frequency** among the three models' predictions,
@@ -52,17 +44,17 @@ The prediction results of **"single"** and **"ensemble"** versions are shared:
 
 |Model |Accuracy(%)|Download|
 |  ----  | ----  | ---- |  
-|REVIVE (Single)| 56.6 |[prediction_acc56.6.json](https://drive.google.com/file/d/1KjMa-XjWjLIwQBg6JhCoLUtJQ9rIMON-/view?usp=sharing)|
-|REVIVE (Ensemble)| 58.1 |[prediction_acc58.1.json](https://drive.google.com/file/d/1rvIP74bfGP5aLr9x2yMn03_f0KrnG0OH/view?usp=sharing)|
+|Ours (Single)| 55.1 |[prediction_acc56.6.json](https://drive.google.com/file/d/1KjMa-XjWjLIwQBg6JhCoLUtJQ9rIMON-/view?usp=sharing)|
+|Ours (Ensemble)| 56.8 |[prediction_acc58.1.json](https://drive.google.com/file/d/1rvIP74bfGP5aLr9x2yMn03_f0KrnG0OH/view?usp=sharing)|
 
 
 ### Train the model
-Run the following command to start training (the A5000 training example):
+Run the following command to start training :
 ```
 export NGPU=4;
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port 10847 train.py \
-          --train_data processed_data/train.pkl \
-          --eval_data processed_data/test.pkl \
+          --train_data processed_data/train_output.pkl \
+          --eval_data processed_data/test_output.pkl \
           --use_checkpoint \
           --lr 0.000075 \
           --model_size large \
@@ -86,12 +78,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
           --total_step 10000 \
           --warmup_step 1000
 ```
-The whole training time is about 18 hours with 4 X A5000 GPUs.
 
 ### Test the trained model
 Run the following command to start evaluation:
 ```
-CUDA_VISIBLE_DEVICES=0 python test.py --eval_data processed_data/test.pkl \
+CUDA_VISIBLE_DEVICES=0 python test.py --eval_data processed_data/test_output.pkl \
           --model_size large \
           --per_gpu_batch_size 8 \
           --num_workers 4 \
@@ -119,18 +110,5 @@ python leaderboard_evaluation.py --pred_path prediction.json \
           --gt_path eval/mscoco_val2014_annotations.json
 ```
 
-## Experimental Results
-
-### Comparison with previous methods
-
-![comparison](https://github.com/yzleroy/REVIVE/blob/main/figures/1.png)
-
-### Example visualization
-
-![visualization](https://github.com/yzleroy/REVIVE/blob/main/figures/2.png)
-
-## Contact
-If I cannot timely respond to your questions, you can send the email to yuanze@uw.edu.
-
 ## Acknowledgements
-Our code is built on [FiD](https://github.com/facebookresearch/FiD) which is under the [LICENSE](https://github.com/facebookresearch/FiD/blob/main/LICENSE).
+Our code strongly adopts [REVIVE](https://github.com/yuanze-lin/REVIVE). We thank the authors for open-sourcing their amazing work.

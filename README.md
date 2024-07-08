@@ -39,7 +39,8 @@ fine-tuning-vqa
 This programm is responsible for the Visual Encoding part and generates the features given a set of image URLs of the COCO dataset with the help of the CLIP model. The final result of the code
 is a Pickle file with urls and features paired together.
 
-NOTE! you cannot view the pickle file though normal means. try uncommenting the "load pickle file" after running the code and print the pickle file if you wish to view its contents.
+NOTE! you cannot view the pickle file though normal means. If you wish to see the contents, you must load the pickle file and then print its contents onto the console or to another file with
+a more simple format.
 
 #### match_and_combine_by_url.py
 

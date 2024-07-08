@@ -33,6 +33,18 @@ fine-tuning-vqa
 ```
 
 ### Recreate pre-processing 
+**Visual Encoding**<br>
+
+#### clip_extractor.py
+This script is responsible for the Visual Encoding part and generates the features given a set of image url's of the cocodataset with the help of the CLIP model. The final result of the code
+is a Pickle file with urls and features paired together.
+
+NOTE! you cannot view the pickle file though normal means. try uncommenting the load pickle file after running the code and print the pickle file if you wish to view its contents.
+
+#### match_and_combine_by_url.py
+
+This script takes the other script's output pickle files as input and merges them together.
+The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
 **Caption and answer candidate generation**<br>
 To generate captions and answer candidates for the OK-VQA dataset, execute  **canidate_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the execution requires the following installations:
 ```
@@ -114,18 +126,6 @@ python leaderboard_evaluation.py --pred_path prediction.json \
           --gt_path eval/mscoco_val2014_annotations.json
 ```
 
-### Script Documentation 
-
-#### clip_extractor.py
-This script is responsible for the Visual Encoding part and generates the features given a set of image url's of the cocodataset with the help of the CLIP model. The final result of the code
-is a Pickle file with urls and features paired together.
-
-NOTE! you cannot view the pickle file though normal means. try uncommenting the load pickle file after running the code and print the pickle file if you wish to view its contents.
-
-#### match_and_combine_by_url.py
-
-This script takes the other script's output pickle files as input and merges them together.
-The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
 
 ## Acknowledgements
 Our code strongly adopts [REVIVE](https://github.com/yuanze-lin/REVIVE). We thank the authors for open-sourcing their amazing work.

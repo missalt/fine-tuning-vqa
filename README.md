@@ -113,14 +113,8 @@ Run the following command to start evaluation with json files:
 python leaderboard_evaluation.py --pred_path prediction.json \
           --gt_path eval/mscoco_val2014_annotations.json
 ```
-### "How to run everything"
 
-1. If you wish to use the same data set (COCO) you can follow the instructions in this link (https://github.com/missalt/REVIVE-finetuning).
-2. make sure you have enough space on your device, approximately 15GB alone for the dataset.
-3. mount the data set on your local system or drive.
-4. the code itself uses the base model of CLIP. You can use your own preferred version of clip by changing the processor model in the code.
-5. if you have no issues with dependencies you should be to run the code and recieve the feature list.
-6. if you wish to test your code without iterating through all the images you can simply add a for loop in the Get image URL section of the code and limit the number of added images.   
+### Script Documentation 
 
 #### clip_extractor.py
 This script is responsible for the Visual Encoding part and generates the features given a set of image url's of the cocodataset with the help of the CLIP model. The final result of the code

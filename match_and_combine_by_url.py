@@ -1,8 +1,9 @@
 import pickle
 
-PATH_CAPTIONS_ANSWERS = "data/train_captions_answers.pkl"
-PATH_FEATURES = "data/output_features.pkl"
-PATH_OUTPUT = "data/train_output.pkl"
+PATH_CAPTIONS_ANSWERS = "out_data/train_answers_captions.pkl"
+PATH_FEATURES = "out_data/output_features.pkl"
+
+PATH_OUTPUT = "out_data/train_output.pkl"
 
 def match_and_combine_by_url():
 

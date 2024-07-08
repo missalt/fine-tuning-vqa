@@ -86,6 +86,6 @@ print("Got dictionary list: " + len(dictionary_list))
 
 
 # write dictionary to pkl file to use for training and testing
-fileName = '/content/gdrive/MyDrive/DATA/output-features.pkl'
+fileName = 'out_data/output_features.pkl'
 with open(fileName, 'wb') as out:
   pickle.dump(dictionary_list, out)

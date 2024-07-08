@@ -32,12 +32,14 @@ fine-tuning-vqa
 ```
 
 ### Recreate pre-processing 
-**Caption and answer candidate generation**
+**Caption and answer candidate generation**<br>
 To generate captions and answer candidates for the OK-VQA dataset, execute  **canidate_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the execution requires the following installations:
 ```
 pip install -U accelerate transformers
 pip install promptcap
 ```
+
+
 
 ### Pre-trained model
 |Model |Description|Accuracy(%)|Weight|Log

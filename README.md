@@ -45,13 +45,14 @@ NOTE! you cannot view the pickle file though normal means. try uncommenting the 
 
 This script takes the other script's output pickle files as input and merges them together.
 The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
+
+
 **Caption and answer candidate generation**<br>
 To generate captions and answer candidates for the OK-VQA dataset, execute  **canidate_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the execution requires the following installations:
 ```
 pip install -U accelerate transformers
 pip install promptcap
 ```
-
 
 
 ### Pre-trained model

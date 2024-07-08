@@ -33,12 +33,13 @@ def generate_caption(file_path, output_path):
     for i, dict_data in enumerate(data):
         question = dict_data['question']
         img_id = dict_data['image_name']
+        answers = dict_data['answers_list']
         split = img_id.split('_')[1]
         url = f"http://images.cocodataset.org/{split}/{img_id}"
-        processed_imgs.append((url, question))
+        processed_imgs.append((url, question, answers))
 
     lst_data = []
-    for i, (url, question) in enumerate(processed_imgs):
+    for i, (url, question, answers) in enumerate(processed_imgs):
         if i % 100 == 0:
             print(f"Processing image {i} of {len(processed_imgs)}")
 
@@ -55,7 +56,7 @@ def generate_caption(file_path, output_path):
         # Generate caption using the PromptCap model
         caption = model.caption(prompt, image_bytes)
 
-        dict = {'url': url, 'question': question, 'caption': caption,}
+        dict = {'url': url, 'question': question, 'caption': caption, 'answers': answers}
         lst_data.append(dict)
 
 

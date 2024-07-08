@@ -46,6 +46,7 @@ def generate_answercandidates(file_path, output_path):
         question = dict_data['question']
         caption = dict_data['caption']
         url = dict_data['url']
+        answers = dict_data['answers']
 
         if i % 100 == 0:
             print(f"Processing caption {i} of {len(data)}")
@@ -79,7 +80,7 @@ def generate_answercandidates(file_path, output_path):
         answer_candidates = [output["generated_text"][len(prompt):].strip() for output in outputs]
 
 
-        dict_new = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
+        dict_new = {'url': url, 'question': question, 'caption': caption, 'answers': answers, 'answer_candidates': answer_candidates}
         lst_data.append(dict_new)
 
 

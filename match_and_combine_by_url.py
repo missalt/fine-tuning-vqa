@@ -1,6 +1,5 @@
 import pickle
 
-PATH_CAPTIONS = "data/train_captions.pkl"
 PATH_CAPTIONS_ANSWERS = "data/train_captions_answers.pkl"
 PATH_FEATURES = "data/output_features.pkl"
 PATH_OUTPUT = "data/train_output.pkl"
@@ -8,23 +7,21 @@ PATH_OUTPUT = "data/train_output.pkl"
 def match_and_combine_by_url():
 
     output = []
-    with open(PATH_CAPTIONS, 'rb') as f_train_captions:
-        with open(PATH_CAPTIONS_ANSWERS, 'rb') as f_train_answers:
-            with open(PATH_FEATURES, 'rb') as f_output_features:
-                data_train_captions = pickle.load(f_train_captions)
-                data_train_answers = pickle.load(f_train_answers)
-                data_output_features = pickle.load(f_output_features)
-
-                for i in range(len(data_train_captions)):
-
-                    if data_train_answers[i]["url"] == data_train_captions[i]["url"] == data_train_captions[i]["url"]:
-
-                        output.append({'url': data_train_captions[i]["url"], 'question': data_train_answers[i]['question'], 'caption': data_train_answers[i]['caption'], 'answers': data_train_answers[i]['answers'], 'answer_candidates': data_train_answers[i]['answer_candidates'], 'feature': data_output_features[i]['feature']})
-
-                    else:
-                        print("Error: URLs dont match") # This shouldn't happen as the url should always be the same for all arrays at i
-
-
+    with open(PATH_CAPTIONS_ANSWERS, 'rb') as f_train_answers:
+        with open(PATH_FEATURES, 'rb') as f_output_features:
+            data_train_answers = pickle.load(f_train_answers)
+            data_output_features = pickle.load(f_output_features)
+            for i in range(len(data_train_answers)):
+                if data_train_answers[i]["url"] == data_output_features[i]["url"]:
+                    output.append({'url': data_train_answers[i]["url"], 
+                                   'question': data_train_answers[i]['question'], 
+                                   'caption': data_train_answers[i]['caption'], 
+                                   'answers': data_train_answers[i]['answers'], 
+                                   'answer_candidates': data_train_answers[i]['answer_candidates'], 
+                                   'feature': data_output_features[i]['feature']
+                                   })
+                else:
+                    print("Error: URLs dont match") # This shouldn't happen as the url should always be the same for all arrays at i
     return output
 
 

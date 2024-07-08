@@ -1,15 +1,13 @@
 import pickle
 from PIL import Image
+
 import requests
 import random
 from io import BytesIO
-
 import torch
 import transformers
-from promptcap import PromptCap
 
-# Initialize the PromptCap model
-model = PromptCap("tifa-benchmark/promptcap-coco-vqa")
+# Parameter for beam search
 n = 10
 
 # Initialize the text generation pipeline with Meta-Llama model
@@ -28,57 +26,30 @@ terminators = [
 ]
 
 
-
-# device = "cuda:0"
-# model.to(device)
-model = model.cuda()
-
-def generate_caption_answercandidates(file_path, output_path):
+def generate_answercandidates(file_path, output_path):
     """
-    Function to generate captions and answer candidates for images.
+    Function to generate answer candidates for images.
 
     Parameters:
     - file_path (str): Path to the input pickle file containing image data.
     - output_path (str): Path to the output pickle file to save results.
 
-    The function loads image data from the input file, generates captions using the PromptCap model,
-    and generates answer candidates using the text generation pipeline. The results are saved to the
-    specified output file.
+    The function loads the captions and corresponding questions from the input file and generates answer candidates. 
+    The results are saved to the specified output file.
     """
 
     with open(file_path, 'rb') as f:
         data = pickle.load(f)
 
-    processed_imgs = []
-
+    lst_data = []
     for i, dict_data in enumerate(data):
         question = dict_data['question']
-        img_id = dict_data['image_name']
-        answers = dict_data['answers_list']
-        split = img_id.split('_')[1]
-        url = f"http://images.cocodataset.org/{split}/{img_id}"
-        processed_imgs.append((url, question))
+        caption = dict_data['caption']
+        url = dict_data['url']
 
-    lst_data = []
-    for i, (url, question) in enumerate(processed_imgs):
         if i % 100 == 0:
-            print(f"Processing image {i} of {len(processed_imgs)}")
+            print(f"Processing caption {i} of {len(data)}")
 
-        ########################################
-        # Generating the caption
-        prompt = f"please describe this image according to the given question: {question}"
-        
-        response = requests.get(url)
-        image = Image.open(BytesIO(response.content))
-
-        image_bytes = BytesIO()
-        image.save(image_bytes, format='JPEG')
-        image_bytes.seek(0)
-
-        # Generate caption using the PromptCap model
-        caption = model.caption(prompt, image_bytes)
-
-        ########################################
         # Generating the answer candidates
         answer_candidates = []
 
@@ -107,10 +78,9 @@ def generate_caption_answercandidates(file_path, output_path):
         # Extract the generated answers from the outputs
         answer_candidates = [output["generated_text"][len(prompt):].strip() for output in outputs]
 
-        ########################################
 
-        dict = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
-        lst_data.append(dict)
+        dict_new = {'url': url, 'question': question, 'caption': caption, 'answers': answer_candidates}
+        lst_data.append(dict_new)
 
 
     with open(output_path, 'wb') as f:
@@ -118,5 +88,5 @@ def generate_caption_answercandidates(file_path, output_path):
 
 
 # Generate captions and answer candidates for training and testing datasets
-generate_caption_answercandidates('processed_data/train_output.pkl', '/out_data/train_answers_captions.pkl')
-generate_caption_answercandidates('processed_data/test_output.pkl', '/out_data/test_answers_captions.pkl')
+generate_answercandidates('out_data/train_caption.pkl', 'out_data/train_answers_captions.pkl')
+generate_answercandidates('out_data/test_caption.pkl', 'out_data/test_answers_captions.pkl')

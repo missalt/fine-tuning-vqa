@@ -118,5 +118,5 @@ def generate_caption_answercandidates(file_path, output_path):
 
 
 # Generate captions and answer candidates for training and testing datasets
-generate_caption_answercandidates('processed_data/train.pkl', '/out_data/train_captions.pkl')
-generate_caption_answercandidates('processed_data/test.pkl', '/out_data/test_captions.pkl')
+generate_caption_answercandidates('processed_data/train_output.pkl', '/out_data/train_answers_captions.pkl')
+generate_caption_answercandidates('processed_data/test_output.pkl', '/out_data/test_answers_captions.pkl')

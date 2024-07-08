@@ -39,21 +39,25 @@ fine-tuning-vqa
 This programm is responsible for the Visual Encoding part and generates the features given a set of image URLs of the COCO dataset with the help of the CLIP model. The final result of the code
 is a Pickle file with urls and features paired together.
 
-NOTE! you cannot view the pickle file though normal means. If you wish to see the contents, you must load the pickle file and then print its contents onto the console or to another file with
+NOTE! You cannot view the pickle file though normal means. If you wish to see the contents, you must load the pickle file and then print its contents onto the console or to another file with
 a more simple format.
-
-#### match_and_combine_by_url.py
-
-This script takes the other script's output pickle files as input and merges them together.
-The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
 
 
 **Caption and answer candidate generation**<br>
-To generate captions and answer candidates for the OK-VQA dataset, execute  **canidate_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the execution requires the following installations:
-```
-pip install -U accelerate transformers
-pip install promptcap
-```
+
+#### caption_generator.py
+To generate captions for the OK-VQA dataset, execute  **caption_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the PromptCap model has to be downloaded. See [PromptCap](https://github.com/Yushi-Hu/PromptCap) for a detailed installation instruction. 
+
+#### candidate_generator.py
+After generating the captions, execute **candidate_generator.py** to generate the answer candidates. See [Llama3](https://github.com/meta-llama/llama3) for more information. 
+
+NOTE! We recomment setting up separate environments for each preprocessing step since installing the modules in one environment might lead to dependency issues. 
+
+
+#### match_and_combine_by_url.py
+This script takes the other script's output pickle files as input and merges them together.
+The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
+
 
 
 ### Pre-trained model

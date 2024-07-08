@@ -1,9 +1,5 @@
 import pickle
-from PIL import Image
 
-import requests
-import random
-from io import BytesIO
 import torch
 import transformers
 

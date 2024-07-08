@@ -6,7 +6,7 @@
 ### Installation
 To establish the environment, just run this code in the shell:
 ```
-https://github.com/missalt/fine-tuning-vqa.git
+git clone https://github.com/missalt/fine-tuning-vqa.git
 cd fine-tuning-vqa
 conda env create -f requirements.yaml
 conda activate revive

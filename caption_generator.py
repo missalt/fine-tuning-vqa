@@ -39,8 +39,6 @@ def generate_caption(file_path, output_path):
 
     lst_data = []
     for i, (url, question) in enumerate(processed_imgs):
-        if i%10==0:
-            break
         if i % 100 == 0:
             print(f"Processing image {i} of {len(processed_imgs)}")
 

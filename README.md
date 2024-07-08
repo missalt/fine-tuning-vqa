@@ -62,7 +62,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
           --model_size large \
           --num_workers 16 \
           --optim adamw \
-          --box_number 36 \
           --scheduler linear \
           --weight_decay 0.01 \
           --save_freq 2000 \
@@ -73,10 +72,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
           --name exp \
           --checkpoint_dir ./checkpoints \
           --per_gpu_batch_size 1 \
-          --n_block 9 \
-          --n_tags 30 \
-          --n_im_context 5 \
-          --n_ex_context 40 \
           --total_step 10000 \
           --warmup_step 1000
 ```
@@ -88,14 +83,9 @@ CUDA_VISIBLE_DEVICES=0 python test.py --eval_data processed_data/test_output.pkl
           --model_size large \
           --per_gpu_batch_size 8 \
           --num_workers 4 \
-          --box_number 36 \
           --text_maxlength 256 \
-          --n_im_context 5 \
-          --n_ex_context 40 \
           --name eval \
           --model_path checkpoints/exp/checkpoint/best_dev/ \
-          --n_block 9 \
-          --n_tags 30 \
           --write_results
 ```
           

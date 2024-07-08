@@ -1,9 +1,8 @@
 
 # Knowledge-based Visual Question Answering - Multimodal Artificial Intelligence Project - Group N
 
-## Getting Started
 
-### Installation
+## Installation
 To establish the environment, just run this code in the shell:
 ```
 git clone https://github.com/missalt/fine-tuning-vqa.git
@@ -12,7 +11,7 @@ conda env create -f requirements.yaml
 conda activate revive
 ```
 That will create the environment ```revive``` we used.
-### Download data
+## Download data
 We provide the pre-processed data, it contains visual features,  question-specific captions, 
 answer candidates for each sample.
 
@@ -32,9 +31,8 @@ fine-tuning-vqa
 └── ...
 ```
 
-### Recreate pre-processing 
-**Visual Encoding**<br>
-
+## Recreate pre-processing 
+### Visual Encoding
 #### clip_extractor.py
 This programm is responsible for the Visual Encoding part and generates the features given a set of image URLs of the COCO dataset with the help of the CLIP model. The final result of the code
 is a Pickle file with urls and features paired together.
@@ -43,8 +41,7 @@ NOTE! You cannot view the pickle file though normal means. If you wish to see th
 a more simple format.
 
 
-**Caption and answer candidate generation**<br>
-
+### Caption and answer candidate generation
 #### caption_generator.py
 To generate captions for the OK-VQA dataset, execute  **caption_generator.py**. However, it is essential to download the pre-processed data first, as the image URLs and questions for the OK-VQA dataset are extracted from these files. Additionally, the PromptCap model has to be downloaded. See [PromptCap](https://github.com/Yushi-Hu/PromptCap) for a detailed installation instruction. 
 
@@ -53,14 +50,13 @@ After generating the captions, execute **candidate_generator.py** to generate th
 
 NOTE! We recomment setting up separate environments for each preprocessing step since installing the modules in one environment might lead to dependency issues. 
 
-
 #### match_and_combine_by_url.py
 This script takes the other script's output pickle files as input and merges them together.
 The pickle files all share their image URL as a common key. This script uses that key to join the matching questions, answers, answer_candidates and the features for each image.
 
 
 
-### Pre-trained model
+## Pre-trained model
 |Model |Description|Accuracy(%)|Weight|Log
 |  ----  | ----  | ----  | ---- | ---- | 
 |Ours (Single)|large size and trained with visual features, question specific captions and answer candidates| 55.2 |Available upon request (too large)|[run.log](https://drive.google.com/file/d/1qsqh0-xJDKv-ZKMlxq4IV2QSMYrjRBeQ/view?usp=drive_link)|
@@ -69,7 +65,7 @@ As for **model ensembling**, you can train three models with different seeds, an
 you can get the final result with the **highest occurence frequency** among the three models' predictions,
 please refer to **ensemble.py**.
 
-### Prediction results
+## Prediction results
 The prediction results of **"single"** and **"ensemble"** versions are shared:
 
 |Model |Accuracy(%)|Download|
@@ -80,7 +76,7 @@ The prediction results of **"single"** and **"ensemble"** versions are shared:
 |Ours (Ensemble)| 56.8 |[prediction_ensemble.json](https://drive.google.com/file/d/1EemLClVK_xIATc0QhI6YiOOm_A0Ekcx-/view?usp=sharing)|
 
 
-### Train the model
+## Train the model
 Run the following command to start training :
 ```
 export NGPU=4;
@@ -106,7 +102,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node
           --warmup_step 1000
 ```
 
-### Test the trained model
+## Test the trained model
 Run the following command to start evaluation:
 ```
 CUDA_VISIBLE_DEVICES=0 python test.py --eval_data processed_data/test_output.pkl \
@@ -123,7 +119,7 @@ It will not only output the final accuracy, but also
 generate the final results as "prediction.json" under the defined
 checkpoint directory path.
 
-### Test with json file
+## Test with json file
 If your prediction json file is named as: "prediction.json".
 
 Run the following command to start evaluation with json files:

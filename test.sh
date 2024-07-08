@@ -1,0 +1,14 @@
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python test.py --eval_data /data/test_output_modified.pkl \
+	--model_size large \
+	--per_gpu_batch_size 1 \
+	--num_workers 8 \
+	--box_number 36 \
+	--text_maxlength 256 \
+	--n_im_context 5 \
+	--n_ex_context 40 \
+	--name eval \
+	--model_path /data/checkpoints/exp-test-large-1357/checkpoint/step-10000/ \
+	--checkpoint_dir /data/checkpoints/exp-test-large-1357/checkpoint/step-10000/ \
+	--n_block 9 \
+	--n_tags 30 \
+    --write_results
